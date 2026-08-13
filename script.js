@@ -105,8 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.fonts) {
             try {
                 await document.fonts.load('bold 84px "JetBrains Mono"');
-                await document.fonts.load('bold 64px "JetBrains Mono"');
+                await document.fonts.load('bold 56px "JetBrains Mono"');
                 await document.fonts.load('bold 36px "JetBrains Mono"');
+                await document.fonts.load('bold 32px "JetBrains Mono"');
                 await document.fonts.load('normal 26px "JetBrains Mono"');
                 await document.fonts.load('normal 22px "JetBrains Mono"');
             } catch (e) {
@@ -161,98 +162,117 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Fonts
         const fontTitle = 'bold 84px "JetBrains Mono"';
-        const fontName = 'bold 64px "JetBrains Mono"';
+        const fontName = 'bold 56px "JetBrains Mono"';
         const fontAccent = 'bold 36px "JetBrains Mono"';
+        const fontHandle = 'bold 32px "JetBrains Mono"';
         const fontSubtitle = 'normal 26px "JetBrains Mono"';
         const fontMicro = 'normal 22px "JetBrains Mono"';
         
-        // 3. Header
-        ctx.fillStyle = greenLight;
-        ctx.font = fontTitle;
-        ctx.textBaseline = 'top';
-        ctx.fillText('HHGOA.', p, p);
+        // --- 1. HEADER ALIGNMENT & LOGO ---
+        const padding = 80;
         
-        ctx.fillStyle = 'rgba(209, 239, 114, 0.7)';
-        ctx.font = fontSubtitle;
-        const subtitle = 'HACKER IDENTITY SYSTEM';
-        let cx = p;
-        for (let i = 0; i < subtitle.length; i++) {
-            ctx.fillText(subtitle[i], cx, p + 95);
-            cx += ctx.measureText(subtitle[i]).width + 6;
-        }
+        // "HHGOA ." - Shifted up to y = 100
+        ctx.fillStyle = '#D1EF72';
+        ctx.font = 'bold 72px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText('HHGOA .', padding, 100);
         
-        const dotX = finalCanvas.width - p - 100;
-        const dotY = p + 15;
-        ctx.fillStyle = greenPrimary;
+        // "HACKER IDENTITY SYSTEM" - Neatly tucked beneath at y = 150
+        ctx.font = '24px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#A3B86C'; // Slightly muted for hierarchy
+        ctx.fillText('HACKER IDENTITY SYSTEM', padding, 150);
+        
+        // "AUTH // VERIFIED" - Shifted UP to y = 150 (now perfectly aligned with the left subheader)
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#A3B86C';
+        ctx.font = '20px "JetBrains Mono", monospace';
+        ctx.fillText('AUTH // VERIFIED', finalCanvas.width - padding, 150);
+        
+        // Horizontal Divider Line - Pushed down to y = 175 so text doesn't cross it
         ctx.beginPath();
-        ctx.arc(dotX, dotY, 6, 0, 2*Math.PI);
-        ctx.fill();
-        ctx.font = fontMicro;
-        ctx.fillStyle = 'rgba(209, 239, 114, 0.8)';
-        ctx.fillText('LIVE', dotX + 20, dotY - 8);
-        
-        ctx.fillStyle = 'rgba(209, 239, 114, 0.5)';
-        ctx.fillText('AUTH // VERIFIED', finalCanvas.width - p - 220, p + 65);
-        
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
-        ctx.beginPath();
-        ctx.moveTo(p, p + 140);
-        ctx.lineTo(finalCanvas.width - p, p + 140);
+        ctx.moveTo(padding, 175);
+        ctx.lineTo(finalCanvas.width - padding, 175);
+        ctx.strokeStyle = '#D1EF72'; // Using the neon lime for the line
+        ctx.lineWidth = 1;
         ctx.stroke();
         
-        // 4. Portrait Area
-        const portraitY = p + 180;
-        const portraitSize = innerWidth;
+        // Draw the new 2:47PM Studio Logo (Top Right Corner)
+        const logoImg = document.getElementById('goa-logo');
+        if (logoImg && logoImg.complete && logoImg.naturalWidth !== 0) {
+            const logoWidth = 180; // Adjust this to scale the logo
+            const logoRatio = logoImg.naturalHeight / logoImg.naturalWidth;
+            const logoHeight = logoWidth * logoRatio;
+            
+            // Positioned in the top right corner, above the "AUTH // VERIFIED" text
+            const logoX = finalCanvas.width - padding - logoWidth;
+            const logoY = 60; 
+            
+            ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
+        } else {
+            // Fallback if logo fails to load: Draw original '● LIVE' text
+            ctx.fillStyle = '#D1EF72';
+            ctx.fillText('● LIVE', finalCanvas.width - padding, 110);
+        }
         
+        // Reset text alignment to left for the rest of the card rendering
+        ctx.textAlign = 'left';
+        
+        // --- 2. FIXED PHOTO & FRAME COORDINATES ---
+        const photoSize = 480;                          // 480x480 square
+        const photoX = (finalCanvas.width - photoSize) / 2;  // Perfectly centered (300px)
+        const photoY = 250;                             // Pushed down to prevent header overlap!
+        
+        // --- 3. DRAW PHOTO WITH CLIPPING MASK ---
         ctx.save();
         ctx.fillStyle = '#020906';
-        ctx.fillRect(p, portraitY, portraitSize, portraitSize);
+        ctx.fillRect(photoX, photoY, photoSize, photoSize);
         
-        const frameMargin = 16;
-        const pX = p + frameMargin;
-        const pY = portraitY + frameMargin;
-        const pS = portraitSize - (frameMargin * 2);
-        
-        ctx.beginPath();
-        ctx.rect(pX, pY, pS, pS);
-        ctx.clip(); 
-        
-        if (uploadedImageObj) {
-            const imgAspect = uploadedImageObj.width / uploadedImageObj.height;
-            let drawW = pS;
-            let drawH = pS;
-            let drawX = pX;
-            let drawY = pY;
-            if (imgAspect > 1) { 
-                drawW = pS * imgAspect;
-                drawX = pX - (drawW - pS) / 2;
-            } else { 
-                drawH = pS / imgAspect;
-                drawY = pY - (drawH - pS) / 2;
-            }
-            ctx.drawImage(uploadedImageObj, drawX, drawY, drawW, drawH);
+        if (uploadedImageObj && uploadedImageObj.complete && uploadedImageObj.naturalWidth !== 0) {
+            const scale = Math.max(photoSize / uploadedImageObj.naturalWidth, photoSize / uploadedImageObj.naturalHeight);
+            const drawWidth = uploadedImageObj.naturalWidth * scale;
+            const drawHeight = uploadedImageObj.naturalHeight * scale;
+            const offsetX = (photoSize - drawWidth) / 2;
+            const offsetY = (photoSize - drawHeight) / 2;
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(photoX, photoY, photoSize, photoSize);
+            ctx.clip(); 
+            
+            ctx.drawImage(uploadedImageObj, photoX + offsetX, photoY + offsetY, drawWidth, drawHeight);
+            ctx.restore();
+        } else {
+            ctx.beginPath();
+            ctx.rect(photoX, photoY, photoSize, photoSize);
+            ctx.clip();
         }
         ctx.restore(); 
         
-        // Portrait Border & Corner brackets
+        // --- 4. BRACKET CORNERS ---
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
-        ctx.strokeRect(p, portraitY, portraitSize, portraitSize);
+        ctx.strokeRect(photoX, photoY, photoSize, photoSize);
         
+        ctx.strokeStyle = '#D1EF72';
         ctx.lineWidth = 4;
-        ctx.strokeStyle = 'rgba(209, 239, 114, 0.5)';
-        const b = 40; 
+        const bLen = 35; // Length of bracket arms
         
-        ctx.beginPath(); ctx.moveTo(p, portraitY + b); ctx.lineTo(p, portraitY); ctx.lineTo(p + b, portraitY); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p + portraitSize - b, portraitY); ctx.lineTo(p + portraitSize, portraitY); ctx.lineTo(p + portraitSize, portraitY + b); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p, portraitY + portraitSize - b); ctx.lineTo(p, portraitY + portraitSize); ctx.lineTo(p + b, portraitY + portraitSize); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p + portraitSize - b, portraitY + portraitSize); ctx.lineTo(p + portraitSize, portraitY + portraitSize); ctx.lineTo(p + portraitSize, portraitY + portraitSize - b); ctx.stroke();
+        ctx.beginPath();
+        // Top-Left
+        ctx.moveTo(photoX, photoY + bLen); ctx.lineTo(photoX, photoY); ctx.lineTo(photoX + bLen, photoY);
+        // Top-Right
+        ctx.moveTo(photoX + photoSize - bLen, photoY); ctx.lineTo(photoX + photoSize, photoY); ctx.lineTo(photoX + photoSize, photoY + bLen);
+        // Bottom-Right
+        ctx.moveTo(photoX + photoSize, photoY + photoSize - bLen); ctx.lineTo(photoX + photoSize, photoY + photoSize); ctx.lineTo(photoX + photoSize - bLen, photoY + photoSize);
+        // Bottom-Left
+        ctx.moveTo(photoX + bLen, photoY + photoSize); ctx.lineTo(photoX, photoY + photoSize); ctx.lineTo(photoX, photoY + photoSize - bLen);
+        ctx.stroke();
         
         // 5. Data Details
         const nameVal = nameInput.value.trim().toUpperCase() || 'YOUR_NAME';
         const roleVal = roleInput.value.trim().toUpperCase() || 'YOUR_ROLE';
         const stackVal = stackInput.value.trim().toUpperCase() || 'YOUR STACK';
+        const githubHandle = githubInput.value.trim() || '@your_handle';
         
         const drawLabel = (txt, y) => {
             ctx.fillStyle = 'rgba(209, 239, 114, 0.6)';
@@ -261,10 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(txt, p, y);
         };
         
-        const yName = 1240;
-        const yRole = 1340;
-        const yStack = 1420;
-        const yFooterLine = 1500;
+        // --- 5. RE-CALIBRATED TEXT Y-COORDINATES ---
+        const yName = photoY + photoSize + 80;   // y = 810
+        const yRole = yName + 130;               // y = 940
+        const yStack = yRole + 120;              // y = 1060
+        const yHandle = yStack + 120;            // y = 1180
+        const yDivider = 1330;                   // Bottom divider line
+        const yFooterLine = 1380;                // Barcode and QR code area
         
         drawLabel('NAME', yName);
         ctx.fillStyle = 'rgba(209, 239, 114, 0.4)';
@@ -272,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         ctx.fillStyle = greenLight;
         ctx.font = fontName;
-        ctx.fillText(nameVal, p, yName + 35);
+        ctx.fillText(nameVal, p, yName + 30);
         
         // Role & Access Grid
         const midX = p + (innerWidth / 2);
@@ -280,21 +303,36 @@ document.addEventListener('DOMContentLoaded', () => {
         drawLabel('ROLE', yRole);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
-        ctx.fillText(roleVal, p, yRole + 35);
+        ctx.fillText(roleVal, p, yRole + 30);
         
         ctx.fillStyle = 'rgba(209, 239, 114, 0.6)';
         ctx.font = fontMicro;
         ctx.fillText('ACCESS', midX, yRole);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
-        ctx.fillText('ALL AREAS', midX, yRole + 35);
+        ctx.fillText('ALL AREAS', midX, yRole + 30);
         
         drawLabel('STACK', yStack);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
-        ctx.fillText(stackVal, p, yStack + 35);
+        ctx.fillText(stackVal, p, yStack + 30);
         
+        // GitHub Handle
+        drawLabel('GITHUB', yHandle);
+        ctx.fillStyle = greenPrimary;
+        ctx.font = fontHandle;
+        ctx.fillText(githubHandle, p, yHandle + 30);
+        
+        // Decorative Divider Line
         ctx.lineWidth = 2;
+        ctx.strokeStyle = greenPrimary;
+        ctx.beginPath();
+        ctx.moveTo(p, yDivider);
+        ctx.lineTo(finalCanvas.width - p, yDivider);
+        ctx.stroke();
+        
+        // Footer Line (thinner)
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.3)';
         ctx.beginPath();
         ctx.moveTo(p, yFooterLine);
@@ -304,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Footer (Barcode + QR)
         let bcX = p;
         const bcY = yFooterLine + 25;
-        const bcH = 40;
+        const bcH = 100; // Scaled up height to visually match QR size
         const bcPattern = [8, 4, 16, 4, 12, 8, 24, 4, 8, 16, 2, 12, 8];
         ctx.fillStyle = 'rgba(209, 239, 114, 0.7)';
         for (let w of bcPattern) {
@@ -314,9 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         ctx.fillStyle = 'rgba(209, 239, 114, 0.8)';
         ctx.font = fontMicro;
-        ctx.fillText('SYS.CODE // 22B.881', p, bcY + 55);
+        ctx.fillText('SYS.CODE // 22B.881', p, bcY + 130);
         
-        const qrSize = 90;
+        const qrSize = 180; // Enlarge QR code to 180x180
         const qrX = finalCanvas.width - p - qrSize;
         const qrY = yFooterLine + 15;
         
