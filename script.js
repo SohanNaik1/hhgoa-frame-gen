@@ -4,33 +4,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadIcon = document.getElementById('uploadIcon');
     const uploadText = document.getElementById('uploadText');
     const manualCropBtn = document.getElementById('manualCropBtn');
-    
+
     const cropModal = document.getElementById('cropModal');
     const cropperImage = document.getElementById('cropperImage');
     const cancelCropBtn = document.getElementById('cancelCropBtn');
     const saveCropBtn = document.getElementById('saveCropBtn');
-    
+
     const previewImage = document.getElementById('previewImage');
     const previewIcon = document.getElementById('previewIcon');
     const previewName = document.getElementById('previewName');
     const previewRole = document.getElementById('previewRole');
     const previewStack = document.getElementById('previewStack');
     const qrCodeContainer = document.getElementById('qrCodeContainer');
-    
+
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const shareBtn = document.getElementById('shareBtn');
-    
+
     const nameInput = document.getElementById('nameInput');
     const roleInput = document.getElementById('roleInput');
     const stackInput = document.getElementById('stackInput');
     const githubInput = document.getElementById('githubInput');
-    
+
     const rolePills = document.getElementById('rolePills');
     const stackPills = document.getElementById('stackPills');
     const roleDropdown = document.getElementById('roleDropdown');
     const stackDropdown = document.getElementById('stackDropdown');
-    
+
     let uploadedImageDataUrl = null;
     let uploadedImageObj = null;
     let rawUploadedFile = null;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const baseTemplate = new Image();
     baseTemplate.crossOrigin = "Anonymous";
     baseTemplate.src = bgImageUrl;
-    
+
     const logoImg = new Image();
     logoImg.src = 'logo.png';
 
@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedStacks = [];
 
     function renderPills() {
-        rolePills.innerHTML = selectedRole ? `<div class="bg-secondary-container text-primary px-2 py-0.5 rounded flex items-center gap-1 font-bold text-xs"><span>${selectedRole}</span><span class="material-symbols-outlined text-[14px] cursor-pointer" onclick="removeRole()">close</span></div>` : '';
-        stackPills.innerHTML = selectedStacks.map(s => `<div class="bg-secondary-container text-primary px-2 py-0.5 rounded flex items-center gap-1 font-bold text-xs"><span>${s}</span><span class="material-symbols-outlined text-[14px] cursor-pointer" onclick="removeStack('${s}')">close</span></div>`).join('');
+        rolePills.innerHTML = selectedRole ? `<div class="bg-black text-[#e2f4a6] px-3 py-0.7 rounded-full flex items-center gap-1 font-bold text-xs border border-[#e2f4a6]/20"><span>${selectedRole}</span><span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-white" onclick="removeRole()">close</span></div>` : '';
+        stackPills.innerHTML = selectedStacks.map(s => `<div class="bg-black text-[#e2f4a6] px-3 py-0.7 rounded-full flex items-center gap-1 font-bold text-xs border border-[#e2f4a6]/20"><span>${s}</span><span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-white" onclick="removeStack('${s}')">close</span></div>`).join('');
         roleInput.style.display = selectedRole ? 'none' : 'block';
         stackInput.style.display = selectedStacks.length >= 3 ? 'none' : 'block';
         validateForm();
@@ -116,12 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FORM VALIDATION ---
     function validateForm() {
-        const isValid = nameInput.value.trim() !== '' && 
-                        githubInput.value.trim() !== '' && 
-                        selectedRole !== '' && 
-                        selectedStacks.length > 0 && 
-                        uploadedImageDataUrl !== null;
-        
+        const isValid = nameInput.value.trim() !== '' &&
+            githubInput.value.trim() !== '' &&
+            selectedRole !== '' &&
+            selectedStacks.length > 0 &&
+            uploadedImageDataUrl !== null;
+
         if (isValid) {
             generateBtn.classList.remove('opacity-50', 'pointer-events-none');
         } else {
@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const blob = await response.blob();
             setCroppedImage(URL.createObjectURL(blob));
 
-            if(uploadIcon) uploadIcon.classList.add('hidden');
-            if(uploadText) uploadText.classList.add('hidden');
+            if (uploadIcon) uploadIcon.classList.add('hidden');
+            if (uploadText) uploadText.classList.add('hidden');
             manualCropBtn.classList.remove('hidden');
 
         } catch (error) {
@@ -163,14 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Error processing image on server. Falling back to original image.");
             setCroppedImage(URL.createObjectURL(rawUploadedFile));
             manualCropBtn.classList.remove('hidden');
-            if(uploadIcon) uploadIcon.classList.add('hidden');
-            if(uploadText) uploadText.classList.add('hidden');
+            if (uploadIcon) uploadIcon.classList.add('hidden');
+            if (uploadText) uploadText.classList.add('hidden');
         }
     });
 
     function setCroppedImage(dataUrl) {
         uploadedImageDataUrl = dataUrl;
-        if(uploadPreviewImage) {
+        if (uploadPreviewImage) {
             uploadPreviewImage.src = uploadedImageDataUrl;
             uploadPreviewImage.classList.remove('hidden');
         }
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!rawUploadedFile) return;
         cropperImage.src = URL.createObjectURL(rawUploadedFile);
         cropModal.classList.remove('hidden');
-        
+
         if (cropper) cropper.destroy();
         cropper = new Cropper(cropperImage, {
             aspectRatio: 1,
@@ -208,26 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
         cropModal.classList.add('hidden');
         cropper.destroy(); cropper = null;
     });
-    
+
     // --- PREVIEW GENERATION ---
     function updateQRCode() {
         if (!qrCodeContainer) return;
         qrCodeContainer.innerHTML = '';
-        const githubHandle = githubInput.value.trim().replace(/^@/, ''); 
+        const githubHandle = githubInput.value.trim().replace(/^@/, '');
         const githubUrl = githubHandle ? `https://github.com/${githubHandle}` : 'https://github.com/';
-        
+
         new QRCode(qrCodeContainer, {
             text: githubUrl,
-            width: 128, 
+            width: 128,
             height: 128,
             colorDark: "#04120c",
             colorLight: "transparent",
-            correctLevel : QRCode.CorrectLevel.L
+            correctLevel: QRCode.CorrectLevel.L
         });
-        
+
         setTimeout(() => {
             const qrElement = qrCodeContainer.querySelector('canvas') || qrCodeContainer.querySelector('img');
-            if(qrElement) {
+            if (qrElement) {
                 qrElement.style.width = '100%';
                 qrElement.style.height = '100%';
                 qrElement.style.objectFit = 'contain';
@@ -240,16 +240,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     generateBtn.addEventListener('click', () => {
         if (!validateForm()) return;
-        if(previewName) previewName.textContent = nameInput.value.trim();
-        if(previewRole) previewRole.textContent = selectedRole;
-        if(previewStack) previewStack.textContent = selectedStacks.join(', ');
-        
+        if (previewName) previewName.textContent = nameInput.value.trim();
+        if (previewRole) previewRole.textContent = selectedRole;
+        if (previewStack) previewStack.textContent = selectedStacks.join(', ');
+
         updateQRCode();
-        
-        if(uploadedImageDataUrl && previewImage) {
+
+        if (uploadedImageDataUrl && previewImage) {
             previewImage.style.backgroundImage = `url(${uploadedImageDataUrl})`;
             previewImage.classList.remove('hidden');
-            if(previewIcon) previewIcon.classList.add('hidden');
+            if (previewIcon) previewIcon.classList.add('hidden');
         }
     });
 
@@ -284,22 +284,24 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateRawCanvas() {
         updateQRCode();
         await new Promise(r => setTimeout(r, 100));
-        
+
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = 1080;
         finalCanvas.height = 1620;
         const ctx = finalCanvas.getContext('2d');
-        
+
         const bgColor = '#04120c';
         const greenPrimary = '#d1ef72';
         const greenLight = '#e2f4a6';
-        const p = 60; 
+        const p = 60;
         const innerWidth = finalCanvas.width - (p * 2);
-        
-        // 1. Background
+
+        // 1. Background (Rounded Corners)
+        drawRoundedRect(ctx, 0, 0, finalCanvas.width, finalCanvas.height, 40);
+        ctx.clip();
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-        
+
         if (baseTemplate.complete && baseTemplate.naturalHeight !== 0) {
             const imgAspect = baseTemplate.width / baseTemplate.height;
             const canvasAspect = finalCanvas.width / finalCanvas.height;
@@ -319,25 +321,38 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = 'rgba(4, 18, 12, 0.92)';
             ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
         }
-        
+
         // 2. Outer Border (Thin)
         ctx.lineWidth = 4;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.3)';
         ctx.strokeRect(6, 6, finalCanvas.width - 12, finalCanvas.height - 12);
-        
+
+        // 2.5 Lanyard Hole
+        const lanyardW = 240;
+        const lanyardH = 40;
+        const lanyardX = (finalCanvas.width - lanyardW) / 2;
+        const lanyardY = 30;
+
+        ctx.fillStyle = '#020906';
+        drawRoundedRect(ctx, lanyardX, lanyardY, lanyardW, lanyardH, 15);
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
+        ctx.stroke();
+
         // Fonts
-        const fontTitle = 'bold 84px "JetBrains Mono"';
-        const fontName = 'bold 64px "JetBrains Mono"';
-        const fontAccent = 'bold 36px "JetBrains Mono"';
-        const fontSubtitle = 'normal 26px "JetBrains Mono"';
-        const fontMicro = 'normal 22px "JetBrains Mono"';
-        
+        const fontTitle = 'bold 96px "JetBrains Mono"';
+        const fontName = 'bold 76px "JetBrains Mono"';
+        const fontAccent = 'bold 44px "JetBrains Mono"';
+        const fontSubtitle = 'normal 30px "JetBrains Mono"';
+        const fontMicro = 'normal 26px "JetBrains Mono"';
+
         // 3. Header
         ctx.fillStyle = greenLight;
         ctx.font = fontTitle;
         ctx.textBaseline = 'top';
         ctx.fillText('HHGOA.', p, p);
-        
+
         ctx.fillStyle = 'rgba(209, 239, 114, 0.7)';
         ctx.font = fontSubtitle;
         const subtitle = 'HACKER IDENTITY SYSTEM';
@@ -346,154 +361,155 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(subtitle[i], cx, p + 95);
             cx += ctx.measureText(subtitle[i]).width + 6;
         }
-        
+
         if (logoImg.complete && logoImg.naturalHeight !== 0) {
-            const logoH = 90;
+            const logoH = 100;
             const logoW = (logoImg.width / logoImg.height) * logoH;
             const logoX = finalCanvas.width - p - logoW;
-            const logoY = p + 10;
+            const logoY = p + 20;
             ctx.drawImage(logoImg, logoX, logoY, logoW, logoH);
         }
-        
+
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
         ctx.beginPath();
         ctx.moveTo(p, p + 140);
         ctx.lineTo(finalCanvas.width - p, p + 140);
         ctx.stroke();
-        
+
         // 4. Portrait Area
-        const portraitY = p + 180;
-        const portraitSize = innerWidth;
-        
+        const portraitY = p + 200;
+        const portraitSize = innerWidth * 0.8;
+        const pBox = p + (innerWidth * 0.1);
+
         ctx.save();
         ctx.fillStyle = '#020906';
-        ctx.fillRect(p, portraitY, portraitSize, portraitSize);
-        
+        ctx.fillRect(pBox, portraitY, portraitSize, portraitSize);
+
         const frameMargin = 16;
-        const pX = p + frameMargin;
+        const pX = pBox + frameMargin;
         const pY = portraitY + frameMargin;
         const pS = portraitSize - (frameMargin * 2);
-        
+
         ctx.beginPath();
         ctx.rect(pX, pY, pS, pS);
-        ctx.clip(); 
-        
+        ctx.clip();
+
         if (uploadedImageObj) {
             const imgAspect = uploadedImageObj.width / uploadedImageObj.height;
             let drawW = pS;
             let drawH = pS;
             let drawX = pX;
             let drawY = pY;
-            if (imgAspect > 1) { 
+            if (imgAspect > 1) {
                 drawW = pS * imgAspect;
                 drawX = pX - (drawW - pS) / 2;
-            } else { 
+            } else {
                 drawH = pS / imgAspect;
                 drawY = pY - (drawH - pS) / 2;
             }
             ctx.drawImage(uploadedImageObj, drawX, drawY, drawW, drawH);
         }
-        ctx.restore(); 
-        
+        ctx.restore();
+
         // Portrait Border & Corner brackets
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
-        ctx.strokeRect(p, portraitY, portraitSize, portraitSize);
-        
+        ctx.strokeRect(pBox, portraitY, portraitSize, portraitSize);
+
         ctx.lineWidth = 4;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.5)';
-        const b = 40; 
-        
-        ctx.beginPath(); ctx.moveTo(p, portraitY + b); ctx.lineTo(p, portraitY); ctx.lineTo(p + b, portraitY); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p + portraitSize - b, portraitY); ctx.lineTo(p + portraitSize, portraitY); ctx.lineTo(p + portraitSize, portraitY + b); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p, portraitY + portraitSize - b); ctx.lineTo(p, portraitY + portraitSize); ctx.lineTo(p + b, portraitY + portraitSize); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p + portraitSize - b, portraitY + portraitSize); ctx.lineTo(p + portraitSize, portraitY + portraitSize); ctx.lineTo(p + portraitSize, portraitY + portraitSize - b); ctx.stroke();
-        
+        const b = 40;
+
+        ctx.beginPath(); ctx.moveTo(pBox, portraitY + b); ctx.lineTo(pBox, portraitY); ctx.lineTo(pBox + b, portraitY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pBox + portraitSize - b, portraitY); ctx.lineTo(pBox + portraitSize, portraitY); ctx.lineTo(pBox + portraitSize, portraitY + b); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pBox, portraitY + portraitSize - b); ctx.lineTo(pBox, portraitY + portraitSize); ctx.lineTo(pBox + b, portraitY + portraitSize); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pBox + portraitSize - b, portraitY + portraitSize); ctx.lineTo(pBox + portraitSize, portraitY + portraitSize); ctx.lineTo(pBox + portraitSize, portraitY + portraitSize - b); ctx.stroke();
+
         // 5. Data Details
         const nameVal = nameInput.value.trim().toUpperCase() || 'YOUR_NAME';
         const roleVal = roleInput.value.trim().toUpperCase() || 'YOUR_ROLE';
-        const stackVal = stackInput.value.trim().toUpperCase() || 'YOUR STACK';
-        
+        const stackVal = stackInput.value.trim().toUpperCase() || 'YOUR_STACK';
+
         const drawLabel = (txt, y) => {
             ctx.fillStyle = 'rgba(209, 239, 114, 0.6)';
             ctx.font = fontMicro;
             ctx.textBaseline = 'top';
             ctx.fillText(txt, p, y);
         };
-        
-        const yName = 1240;
-        const yRole = 1340;
-        const yStack = 1420;
-        const yFooterLine = 1500;
-        
+
+        const yName = 1180;
+        const yRole = 1280;
+        const yStack = 1370;
+        const yFooterLine = 1450;
+
         drawLabel('NAME', yName);
         ctx.fillStyle = 'rgba(209, 239, 114, 0.4)';
         ctx.fillText('ID:0x8F9A', finalCanvas.width - p - 130, yName);
-        
+
         ctx.fillStyle = greenLight;
         ctx.font = fontName;
         ctx.fillText(nameVal, p, yName + 35);
-        
+
         // Role & Access Grid
         const midX = p + (innerWidth / 2);
-        
+
         drawLabel('ROLE', yRole);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
         ctx.fillText(roleVal, p, yRole + 35);
-        
+
         ctx.fillStyle = 'rgba(209, 239, 114, 0.6)';
         ctx.font = fontMicro;
         ctx.fillText('ACCESS', midX, yRole);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
         ctx.fillText('ALL AREAS', midX, yRole + 35);
-        
+
         drawLabel('STACK', yStack);
         ctx.fillStyle = greenPrimary;
         ctx.font = fontAccent;
         ctx.fillText(stackVal, p, yStack + 35);
-        
+
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.3)';
         ctx.beginPath();
         ctx.moveTo(p, yFooterLine);
         ctx.lineTo(finalCanvas.width - p, yFooterLine);
         ctx.stroke();
-        
+
         // Footer (Barcode + QR)
         let bcX = p;
         const bcY = yFooterLine + 25;
-        const bcH = 40;
+        const bcH = 60;
         const bcPattern = [8, 4, 16, 4, 12, 8, 24, 4, 8, 16, 2, 12, 8];
         ctx.fillStyle = 'rgba(209, 239, 114, 0.7)';
         for (let w of bcPattern) {
             ctx.fillRect(bcX, bcY, w, bcH);
-            bcX += w + 6; 
+            bcX += w + 6;
         }
-        
+
         ctx.fillStyle = 'rgba(209, 239, 114, 0.8)';
         ctx.font = fontMicro;
-        ctx.fillText('SYS.CODE // 22B.881', p, bcY + 55);
-        
-        const qrSize = 90;
+        ctx.fillText('SYS.CODE // 22B.881', p, bcY + 75);
+
+        const qrSize = 130;
         const qrX = finalCanvas.width - p - qrSize;
-        const qrY = yFooterLine + 15;
-        
+        const qrY = yFooterLine + 5;
+
         ctx.fillStyle = greenPrimary;
         drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 8);
         ctx.fill();
-        
+
         const qrCanvas = qrCodeContainer ? qrCodeContainer.querySelector('canvas') : null;
         const qrImg = qrCodeContainer ? qrCodeContainer.querySelector('img') : null;
         const qrSource = (qrImg && qrImg.src) ? qrImg : qrCanvas;
-        
+
         if (qrSource) {
             const qrPad = 8;
-            ctx.drawImage(qrSource, qrX + qrPad, qrY + qrPad, qrSize - (qrPad*2), qrSize - (qrPad*2));
+            ctx.drawImage(qrSource, qrX + qrPad, qrY + qrPad, qrSize - (qrPad * 2), qrSize - (qrPad * 2));
         }
-        
+
         return finalCanvas;
     }
 
@@ -502,17 +518,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalText = downloadBtn.innerHTML;
             downloadBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Generating...';
             downloadBtn.disabled = true;
-            
+
             await loadFontsForCanvas();
-            
+
             const finalCanvas = await generateRawCanvas();
             const nameVal = nameInput.value.trim() || 'hacker';
-            
+
             const link = document.createElement('a');
             link.download = `hhgoa-id-${nameVal.replace(/\s+/g, '-').toLowerCase()}.png`;
             link.href = finalCanvas.toDataURL("image/png");
             link.click();
-            
+
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
         });
@@ -522,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shareBtn.addEventListener('click', async () => {
             const text = "I just generated my HHGOA Hacker Identity!";
             const url = window.location.href;
-            
+
             if (navigator.share) {
                 try {
                     const originalText = shareBtn.innerHTML;
@@ -531,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     await loadFontsForCanvas();
                     const finalCanvas = await generateRawCanvas();
-                    
+
                     finalCanvas.toBlob(async (blob) => {
                         const file = new File([blob], 'hhgoa-id.png', { type: 'image/png' });
                         try {
@@ -541,13 +557,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 url: url,
                                 files: [file]
                             });
-                        } catch (err) {}
+                        } catch (err) { }
                     });
-                    
+
                     shareBtn.innerHTML = originalText;
                     shareBtn.disabled = false;
-                    return; 
-                } catch (e) {}
+                    return;
+                } catch (e) { }
             }
             const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
             window.open(twitterUrl, '_blank');
