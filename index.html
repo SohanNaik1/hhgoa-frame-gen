@@ -108,6 +108,11 @@
         body { background-color: #05261b; } /* Slightly desaturated forest green fallback if tailwind misses */
         .brutalist-input { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.surface'); outline: none; }
         .brutalist-input:focus { border-color: theme('colors.secondary-container'); box-shadow: 4px 4px 0 theme('colors.secondary-container'); }
+        @media (hover: none) and (pointer: coarse) {
+            .card-container {
+                pointer-events: none;
+            }
+        }
         .brutalist-btn { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.secondary-container'); color: theme('colors.primary'); transition: none; }
         .brutalist-btn:hover { background-color: theme('colors.primary'); color: theme('colors.secondary-container'); border-color: theme('colors.secondary-container'); }
         .brutalist-card { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.surface'); }
@@ -156,7 +161,7 @@ GENERATE CARD
 <!-- Right Pane: Preview -->
 <section class="flex flex-col gap-md items-center justify-center bg-primary p-md md:p-lg border-2 border-secondary-container relative rounded-2xl">
 <!-- Corner Accents -->
-<div class="w-full max-w-[400px] aspect-[2/3] relative" data-tilt="" data-tilt-glare="" data-tilt-max="15" data-tilt-max-glare="0.3" data-tilt-speed="400" style="will-change: transform; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);">
+<div class="card-container w-full max-w-[400px] aspect-[2/3] relative" data-tilt="" data-tilt-glare="" data-tilt-max="15" data-tilt-max-glare="0.3" data-tilt-speed="400" style="will-change: transform; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);">
 <!-- The ID Card -->
 <div id="idCardNode" class="absolute inset-0 flex flex-col p-3 bg-[#04120c] text-[#d1ef72] overflow-hidden shadow-[0_0_30px_rgba(209,239,114,0.1)] rounded-xl border border-[#d1ef72]/30 font-label-mono relative" style="background-image: linear-gradient(rgba(4, 18, 12, 0.88), rgba(4, 18, 12, 0.96)), url('https://lh3.googleusercontent.com/aida/AP1WRLvyhHiZdHbdUf3SxmTAWzTcWVVQDYlXZK4XpezZGr9zl5-LDa5wT9EdPMSnGW75z-U4uBYuZ-9nAJ6lbFqacDIDUh-caYiV7bBDcX74S90_Sc4AL-sBDu35ujRLTwphbBBBVc5TV1AyLY3zf2IfNIdl0_7_tPL6RNVLeVhmBJOmdFO87VvENk4d0ecYcNDY204bzDYnjzZQW4cP33BRCx2hD658BHABhOehMU9G7W8wRcHUCS3gq9Y_jSU'); background-size: cover; background-position: center center; background-repeat: no-repeat;">
     
