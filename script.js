@@ -536,37 +536,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (shareBtn) {
         shareBtn.addEventListener('click', async () => {
-            const text = "I just generated my HHGOA Hacker Identity!";
-            const url = window.location.href;
+            const text = "I just generated my HHGOA Hacker Identity! #FrameInGoa";
 
-            if (navigator.share) {
-                try {
-                    const originalText = shareBtn.innerHTML;
-                    shareBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Preparing...';
-                    shareBtn.disabled = true;
+            const originalText = shareBtn.innerHTML;
+            shareBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> Preparing...';
+            shareBtn.disabled = true;
 
-                    await loadFontsForCanvas();
-                    const finalCanvas = await generateRawCanvas();
+            await loadFontsForCanvas();
+            const finalCanvas = await generateRawCanvas();
 
-                    finalCanvas.toBlob(async (blob) => {
-                        const file = new File([blob], 'hhgoa-id.png', { type: 'image/png' });
-                        try {
-                            await navigator.share({
-                                title: 'HHGOA Hacker Identity',
-                                text: text,
-                                url: url,
-                                files: [file]
-                            });
-                        } catch (err) { }
-                    });
+            finalCanvas.toBlob(async (blob) => {
+                const nameVal = nameInput.value.trim() || 'hacker';
+                const file = new File([blob], `hhgoa-id-${nameVal.replace(/\s+/g, '-').toLowerCase()}.png`, { type: 'image/png' });
 
-                    shareBtn.innerHTML = originalText;
-                    shareBtn.disabled = false;
-                    return;
-                } catch (e) { }
-            }
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-            window.open(twitterUrl, '_blank');
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            text: text,
+                            files: [file]
+                        });
+                    } catch (err) { console.error("Error sharing:", err); }
+                } else {
+                    // Fallback: download image and open intent
+                    const link = document.createElement('a');
+                    link.download = file.name;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+
+                    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                    setTimeout(() => window.open(twitterUrl, '_blank'), 300);
+                }
+
+                shareBtn.innerHTML = originalText;
+                shareBtn.disabled = false;
+            });
         });
     }
 });
