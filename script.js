@@ -3,6 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadPreviewImage = document.getElementById('uploadPreviewImage');
     const uploadIcon = document.getElementById('uploadIcon');
     const uploadText = document.getElementById('uploadText');
+    const manualCropBtn = document.getElementById('manualCropBtn');
+    
+    const cropModal = document.getElementById('cropModal');
+    const cropperImage = document.getElementById('cropperImage');
+    const cancelCropBtn = document.getElementById('cancelCropBtn');
+    const saveCropBtn = document.getElementById('saveCropBtn');
     
     const previewImage = document.getElementById('previewImage');
     const previewIcon = document.getElementById('previewIcon');
@@ -20,8 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const stackInput = document.getElementById('stackInput');
     const githubInput = document.getElementById('githubInput');
     
+    const rolePills = document.getElementById('rolePills');
+    const stackPills = document.getElementById('stackPills');
+    const roleDropdown = document.getElementById('roleDropdown');
+    const stackDropdown = document.getElementById('stackDropdown');
+    
     let uploadedImageDataUrl = null;
     let uploadedImageObj = null;
+    let rawUploadedFile = null;
+    let cropper = null;
 
     const bgImageUrl = 'https://lh3.googleusercontent.com/aida/AP1WRLvyhHiZdHbdUf3SxmTAWzTcWVVQDYlXZK4XpezZGr9zl5-LDa5wT9EdPMSnGW75z-U4uBYuZ-9nAJ6lbFqacDIDUh-caYiV7bBDcX74S90_Sc4AL-sBDu35ujRLTwphbBBBVc5TV1AyLY3zf2IfNIdl0_7_tPL6RNVLeVhmBJOmdFO87VvENk4d0ecYcNDY204bzDYnjzZQW4cP33BRCx2hD658BHABhOehMU9G7W8wRcHUCS3gq9Y_jSU';
     const baseTemplate = new Image();
@@ -31,26 +44,172 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoImg = new Image();
     logoImg.src = 'logo.png';
 
-    portraitUpload.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                uploadedImageDataUrl = event.target.result;
-                if(uploadPreviewImage) {
-                    uploadPreviewImage.src = uploadedImageDataUrl;
-                    uploadPreviewImage.classList.remove('hidden');
+    // --- AUTOCOMPLETE & PILL LOGIC ---
+    const rolesList = ['Developer', 'Designer', 'Product Manager', 'Founder', 'Hacker', 'Engineer', 'Data Scientist', 'Content Creator', 'Marketer', 'Builder'];
+    const stacksList = ['React', 'Next.js', 'Go', 'Python', 'Rust', 'Figma', 'Node.js', 'Solidity', 'TailwindCSS', 'AWS', 'Docker', 'Kubernetes', 'SQL', 'MongoDB', 'C++', 'C#', 'AI', 'UI/UX'];
+
+    let selectedRole = '';
+    let selectedStacks = [];
+
+    function renderPills() {
+        rolePills.innerHTML = selectedRole ? `<div class="bg-secondary-container text-primary px-2 py-0.5 rounded flex items-center gap-1 font-bold text-xs"><span>${selectedRole}</span><span class="material-symbols-outlined text-[14px] cursor-pointer" onclick="removeRole()">close</span></div>` : '';
+        stackPills.innerHTML = selectedStacks.map(s => `<div class="bg-secondary-container text-primary px-2 py-0.5 rounded flex items-center gap-1 font-bold text-xs"><span>${s}</span><span class="material-symbols-outlined text-[14px] cursor-pointer" onclick="removeStack('${s}')">close</span></div>`).join('');
+        roleInput.style.display = selectedRole ? 'none' : 'block';
+        stackInput.style.display = selectedStacks.length >= 3 ? 'none' : 'block';
+        validateForm();
+    }
+
+    window.removeRole = () => { selectedRole = ''; renderPills(); };
+    window.removeStack = (s) => { selectedStacks = selectedStacks.filter(x => x !== s); renderPills(); };
+
+    function setupAutocomplete(inputEl, dropdownEl, dataList, isRole) {
+        inputEl.addEventListener('input', () => {
+            const val = inputEl.value.toLowerCase();
+            if (!val) { dropdownEl.classList.add('hidden'); return; }
+            const matches = dataList.filter(item => item.toLowerCase().includes(val) && (isRole ? true : !selectedStacks.includes(item)));
+            if (matches.length > 0) {
+                dropdownEl.innerHTML = matches.map(m => `<div class="p-2 text-primary hover:bg-primary hover:text-secondary-container cursor-pointer transition-colors" data-val="${m}">${m}</div>`).join('');
+                dropdownEl.classList.remove('hidden');
+            } else {
+                dropdownEl.classList.add('hidden');
+            }
+        });
+        dropdownEl.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() === 'div' && e.target.dataset.val) {
+                if (isRole) {
+                    selectedRole = e.target.dataset.val;
+                } else if (selectedStacks.length < 3) {
+                    selectedStacks.push(e.target.dataset.val);
                 }
-                if(uploadIcon) uploadIcon.classList.add('hidden');
-                if(uploadText) uploadText.classList.add('hidden');
-                
-                uploadedImageObj = new Image();
-                uploadedImageObj.src = uploadedImageDataUrl;
-            };
-            reader.readAsDataURL(file);
+                inputEl.value = '';
+                dropdownEl.classList.add('hidden');
+                renderPills();
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (e.target !== inputEl && e.target !== dropdownEl) dropdownEl.classList.add('hidden');
+        });
+    }
+
+    setupAutocomplete(roleInput, roleDropdown, rolesList, true);
+    setupAutocomplete(stackInput, stackDropdown, stacksList, false);
+
+    // Allow user to hit Enter to add custom pill if not in list
+    stackInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && stackInput.value.trim() && selectedStacks.length < 3) {
+            e.preventDefault();
+            selectedStacks.push(stackInput.value.trim().toUpperCase());
+            stackInput.value = '';
+            stackDropdown.classList.add('hidden');
+            renderPills();
         }
     });
+    roleInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && roleInput.value.trim() && !selectedRole) {
+            e.preventDefault();
+            selectedRole = roleInput.value.trim().toUpperCase();
+            roleInput.value = '';
+            roleDropdown.classList.add('hidden');
+            renderPills();
+        }
+    });
+
+    // --- FORM VALIDATION ---
+    function validateForm() {
+        const isValid = nameInput.value.trim() !== '' && 
+                        githubInput.value.trim() !== '' && 
+                        selectedRole !== '' && 
+                        selectedStacks.length > 0 && 
+                        uploadedImageDataUrl !== null;
+        
+        if (isValid) {
+            generateBtn.classList.remove('opacity-50', 'pointer-events-none');
+        } else {
+            generateBtn.classList.add('opacity-50', 'pointer-events-none');
+        }
+        return isValid;
+    }
+
+    [nameInput, githubInput].forEach(el => el.addEventListener('input', validateForm));
+
+    // --- IMAGE UPLOAD & CROPPER ---
+    portraitUpload.addEventListener('change', async (e) => {
+        rawUploadedFile = e.target.files[0];
+        if (!rawUploadedFile) return;
+
+        if (uploadIcon) uploadIcon.textContent = 'hourglass_empty';
+        if (uploadText) uploadText.textContent = 'CROPPING...';
+
+        const formData = new FormData();
+        formData.append('image', rawUploadedFile);
+
+        try {
+            const response = await fetch('/api/crop', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Server crop failed');
+
+            const blob = await response.blob();
+            setCroppedImage(URL.createObjectURL(blob));
+
+            if(uploadIcon) uploadIcon.classList.add('hidden');
+            if(uploadText) uploadText.classList.add('hidden');
+            manualCropBtn.classList.remove('hidden');
+
+        } catch (error) {
+            console.error(error);
+            alert("Error processing image on server. Falling back to original image.");
+            setCroppedImage(URL.createObjectURL(rawUploadedFile));
+            manualCropBtn.classList.remove('hidden');
+            if(uploadIcon) uploadIcon.classList.add('hidden');
+            if(uploadText) uploadText.classList.add('hidden');
+        }
+    });
+
+    function setCroppedImage(dataUrl) {
+        uploadedImageDataUrl = dataUrl;
+        if(uploadPreviewImage) {
+            uploadPreviewImage.src = uploadedImageDataUrl;
+            uploadPreviewImage.classList.remove('hidden');
+        }
+        uploadedImageObj = new Image();
+        uploadedImageObj.src = uploadedImageDataUrl;
+        validateForm();
+    }
+
+    manualCropBtn.addEventListener('click', () => {
+        if (!rawUploadedFile) return;
+        cropperImage.src = URL.createObjectURL(rawUploadedFile);
+        cropModal.classList.remove('hidden');
+        
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropperImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            background: false
+        });
+    });
+
+    cancelCropBtn.addEventListener('click', () => {
+        cropModal.classList.add('hidden');
+        if (cropper) { cropper.destroy(); cropper = null; }
+    });
+
+    saveCropBtn.addEventListener('click', () => {
+        if (!cropper) return;
+        const canvas = cropper.getCroppedCanvas({
+            width: 1080,
+            height: 1080,
+            fillColor: '#000'
+        });
+        setCroppedImage(canvas.toDataURL('image/jpeg', 0.9));
+        cropModal.classList.add('hidden');
+        cropper.destroy(); cropper = null;
+    });
     
+    // --- PREVIEW GENERATION ---
     function updateQRCode() {
         if (!qrCodeContainer) return;
         qrCodeContainer.innerHTML = '';
@@ -76,10 +235,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
     }
 
+    // Call initially to disable button
+    validateForm();
+
     generateBtn.addEventListener('click', () => {
-        if(previewName) previewName.textContent = nameInput.value.trim() || 'Your_name';
-        if(previewRole) previewRole.textContent = roleInput.value.trim() || 'Your_role';
-        if(previewStack) previewStack.textContent = stackInput.value.trim() || 'Your Stack';
+        if (!validateForm()) return;
+        if(previewName) previewName.textContent = nameInput.value.trim();
+        if(previewRole) previewRole.textContent = selectedRole;
+        if(previewStack) previewStack.textContent = selectedStacks.join(', ');
         
         updateQRCode();
         
