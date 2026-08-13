@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const baseTemplate = new Image();
     baseTemplate.crossOrigin = "Anonymous";
     baseTemplate.src = bgImageUrl;
+    
+    const logoImg = new Image();
+    logoImg.src = 'logo.png';
 
     portraitUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -181,18 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
             cx += ctx.measureText(subtitle[i]).width + 6;
         }
         
-        const dotX = finalCanvas.width - p - 100;
-        const dotY = p + 15;
-        ctx.fillStyle = greenPrimary;
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 6, 0, 2*Math.PI);
-        ctx.fill();
-        ctx.font = fontMicro;
-        ctx.fillStyle = 'rgba(209, 239, 114, 0.8)';
-        ctx.fillText('LIVE', dotX + 20, dotY - 8);
-        
-        ctx.fillStyle = 'rgba(209, 239, 114, 0.5)';
-        ctx.fillText('AUTH // VERIFIED', finalCanvas.width - p - 220, p + 65);
+        if (logoImg.complete && logoImg.naturalHeight !== 0) {
+            const logoH = 90;
+            const logoW = (logoImg.width / logoImg.height) * logoH;
+            const logoX = finalCanvas.width - p - logoW;
+            const logoY = p + 10;
+            ctx.drawImage(logoImg, logoX, logoY, logoW, logoH);
+        }
         
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(209, 239, 114, 0.2)';
