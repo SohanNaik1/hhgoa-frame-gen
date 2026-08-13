@@ -428,8 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 5. Data Details
         const nameVal = nameInput.value.trim().toUpperCase() || 'YOUR_NAME';
-        const roleVal = roleInput.value.trim().toUpperCase() || 'YOUR_ROLE';
-        const stackVal = stackInput.value.trim().toUpperCase() || 'YOUR_STACK';
+        const roleVal = selectedRole || 'YOUR_ROLE';
+        const stackVal = selectedStacks.join(', ') || 'YOUR_STACK';
 
         const drawLabel = (txt, y) => {
             ctx.fillStyle = 'rgba(209, 239, 114, 0.6)';
