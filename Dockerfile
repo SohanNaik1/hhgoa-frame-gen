@@ -8,7 +8,7 @@ RUN go mod download
 
 # Copy source code and build
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o hhgoa-app main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags '-w -extldflags "-static"' -o hhgoa-app main.go
 
 FROM alpine:latest
 
@@ -22,7 +22,7 @@ COPY --from=builder /app/script.js .
 COPY --from=builder /app/logo.png .
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 80
 
 # Run the Go app
 CMD ["./hhgoa-app"]

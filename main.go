@@ -36,10 +36,7 @@ func main() {
 	http.Handle("/", fs)
 	http.HandleFunc("/api/crop", handleCrop)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	port := "80"
 	fmt.Printf("Engine ignited. Listening on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
