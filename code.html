@@ -1,0 +1,225 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Hackathon ID Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "primary": "#00150d",
+                        "surface-tint": "#426656",
+                        "outline": "#717974",
+                        "inverse-primary": "#a9cfbc",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-surface": "#1c1b1b",
+                        "secondary-container": "#d1ef72",
+                        "tertiary-container": "#242626",
+                        "secondary-fixed": "#d1ef72",
+                        "on-tertiary-container": "#8c8d8d",
+                        "outline-variant": "#c1c8c2",
+                        "on-primary-container": "#709583",
+                        "secondary-fixed-dim": "#b6d259",
+                        "surface-variant": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#3d4d00",
+                        "on-secondary-container": "#576c00",
+                        "secondary": "#526600",
+                        "tertiary-fixed": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#313030",
+                        "on-background": "#1c1b1b",
+                        "surface-dim": "#dcd9d9",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#171e00",
+                        "primary-fixed": "#c4ebd7",
+                        "inverse-on-surface": "#f3f0ef",
+                        "tertiary": "#0f1112",
+                        "primary-fixed-dim": "#a9cfbc",
+                        "surface": "#fcf9f8",
+                        "on-surface-variant": "#414844",
+                        "on-primary-fixed-variant": "#2a4e3f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-high": "#eae7e7",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "background": "#fcf9f8",
+                        "on-primary-fixed": "#002115",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "primary-container": "#062c1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "none": "0px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "sm": "16px",
+                        "margin-desktop": "64px",
+                        "xs": "8px",
+                        "xl": "80px",
+                        "lg": "48px"
+                    },
+                    "fontFamily": {
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "headline-xl": ["Playfair Display"],
+                        "body-md": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-lg": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-mono": ["12px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-xl": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #05261b; } /* Slightly desaturated forest green fallback if tailwind misses */
+        .brutalist-input { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.surface'); outline: none; }
+        .brutalist-input:focus { border-color: theme('colors.secondary-container'); box-shadow: 4px 4px 0 theme('colors.secondary-container'); }
+        .brutalist-btn { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.secondary-container'); color: theme('colors.primary'); transition: none; }
+        .brutalist-btn:hover { background-color: theme('colors.primary'); color: theme('colors.secondary-container'); border-color: theme('colors.secondary-container'); }
+        .brutalist-card { border: 2px solid theme('colors.primary'); border-radius: 0; background-color: theme('colors.surface'); }
+    </style>
+</head>
+<body class="bg-primary-container min-h-screen text-surface antialiased overflow-x-hidden selection:bg-secondary-container selection:text-primary font-body-md">
+<!-- Top Navigation Anchor (Desktop Only) -->
+<!-- Main Content Grid -->
+<main class="w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop pt-md md:pt-xl pb-xl grid grid-cols-1 md:grid-cols-2 gap-gutter mt-0 md:mt-16">
+<!-- Left Pane: Controls -->
+<section class="flex flex-col gap-lg h-full">
+<header>
+<h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-secondary-container">IDENTITY PARAMETERS</h1>
+<div class="h-2px w-full bg-secondary-container mt-xs"></div>
+</header>
+<div class="flex flex-col gap-md flex-grow"><!-- Image Dropzone -->
+<div class="border-2 border-dashed border-secondary-container bg-primary-container p-lg flex flex-col items-center justify-center text-center cursor-pointer hover:bg-primary transition-none relative group min-h-[160px] rounded-2xl">
+<span class="material-symbols-outlined text-[48px] text-secondary-container mb-xs group-hover:-translate-y-1">add_a_photo</span>
+<p class="font-label-caps text-label-caps text-secondary-container">UPLOAD PORTRAIT</p>
+<input accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file">
+</div>
+<!-- Inputs -->
+<div class="grid grid-cols-1 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-secondary-container">NAME</label>
+<input class="brutalist-input p-sm font-body-md text-body-md text-primary w-full rounded-xl" placeholder="e.g. ARYAN CHAUHAN" type="text">
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-secondary-container">ROLE</label>
+<input class="brutalist-input p-sm font-body-md text-body-md text-primary w-full rounded-xl" placeholder="e.g. DIRECTOR OF ART" type="text">
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-secondary-container">STACK</label>
+<input class="brutalist-input p-sm font-body-md text-body-md text-primary w-full rounded-xl" placeholder="e.g. PS, AI, FIGMA" type="text">
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-mono text-label-mono text-secondary-container">GITHUB_HANDLE</label>
+<input class="brutalist-input p-sm font-body-md text-body-md text-primary w-full rounded-xl" placeholder="e.g. @neuromancer" type="text">
+</div>
+<button class="mt-md w-full bg-[#e2f4a6] border-2 border-primary p-sm font-label-caps text-label-caps text-primary flex items-center justify-center gap-xs rounded-xl hover:bg-primary hover:text-[#e2f4a6] transition-colors shadow-[4px_4px_0px_0px_#062c1f] active:translate-y-1 active:shadow-none">
+<span class="material-symbols-outlined">auto_awesome</span>
+GENERATE CARD
+</button></div></div>
+</section>
+<!-- Right Pane: Preview -->
+<section class="flex flex-col gap-md items-center justify-center bg-primary p-md md:p-lg border-2 border-secondary-container relative rounded-2xl">
+<!-- Corner Accents -->
+<div class="w-full max-w-[400px] aspect-[2/3] relative" data-tilt="" data-tilt-glare="" data-tilt-max="15" data-tilt-max-glare="0.3" data-tilt-speed="400" style="will-change: transform; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);">
+<!-- The ID Card -->
+<div class="absolute inset-0 flex flex-col p-md bg-[#e2f4a6] text-primary overflow-hidden shadow-[8px_8px_0px_0px_#062c1f] rounded-2xl border-2 border-primary" style="background-image: linear-gradient(rgba(226, 244, 166, 0.85), rgba(226, 244, 166, 0.85)), url(&quot;https://lh3.googleusercontent.com/aida/AP1WRLvyhHiZdHbdUf3SxmTAWzTcWVVQDYlXZK4XpezZGr9zl5-LDa5wT9EdPMSnGW75z-U4uBYuZ-9nAJ6lbFqacDIDUh-caYiV7bBDcX74S90_Sc4AL-sBDu35ujRLTwphbBBBVc5TV1AyLY3zf2IfNIdl0_7_tPL6RNVLeVhmBJOmdFO87VvENk4d0ecYcNDY204bzDYnjzZQW4cP33BRCx2hD658BHABhOehMU9G7W8wRcHUCS3gq9Y_jSU&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;">
+<!-- Header -->
+<div class="flex flex-col mb-sm">
+
+<h2 class="font-headline-md text-[28px] leading-none font-bold">HHG ID</h2>
+</div>
+<div class="flex gap-sm flex-grow">
+<!-- Left Sidebar (Icons) -->
+
+<!-- Main Content -->
+<div class="flex-grow flex flex-col">
+<!-- Photo -->
+<div class="aspect-square bg-[#b6d259] rounded-2xl border-2 border-primary overflow-hidden flex items-center justify-center mb-sm">
+<span class="material-symbols-outlined text-[48px] opacity-40">person</span>
+</div>
+<!-- Info -->
+<div class="border-b-2 border-primary pb-1 mb-2">
+<h3 class="font-headline-md text-[20px] leading-tight">Your_name</h3>
+<p class="font-label-mono text-[10px] opacity-70">Your_role</p>
+</div>
+<!-- Footer Row -->
+<div class="flex justify-between items-end"><div class="w-full flex justify-center pt-2"><div class="w-16 h-16 border-2 border-primary p-1 flex items-center justify-center bg-surface"><span class="material-symbols-outlined text-[40px]">qr_code_2</span></div></div></div>
+</div>
+</div>
+</div>
+<div class="js-tilt-glare" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; pointer-events: none; border-radius: inherit;"><div class="js-tilt-glare-inner" style="position: absolute; top: 50%; left: 50%; pointer-events: none; background-image: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%); transform: rotate(180deg) translate(-50%, -50%); transform-origin: 0% 0% 0px; opacity: 0; width: 1200px; height: 1200px;"></div></div><div class="js-tilt-glare"><div class="js-tilt-glare-inner"></div></div><div class="js-tilt-glare"><div class="js-tilt-glare-inner"></div></div><div class="js-tilt-glare"><div class="js-tilt-glare-inner"></div></div><div class="js-tilt-glare"><div class="js-tilt-glare-inner"></div></div><div class="js-tilt-glare"><div class="js-tilt-glare-inner"></div></div></div>
+<!-- Action Buttons -->
+<div class="flex gap-md w-full max-w-[400px] mt-md"><button class="flex-1 bg-[#e2f4a6] border-2 border-primary p-xs font-label-caps text-label-caps text-primary flex items-center justify-center gap-xs rounded-lg hover:bg-primary hover:text-[#e2f4a6] transition-colors">
+<span class="material-symbols-outlined text-[16px]">download</span>
+    Download PNG
+</button>
+<button class="flex-1 border-2 border-[#e2f4a6] bg-transparent text-[#e2f4a6] hover:bg-[#e2f4a6] hover:text-primary p-xs font-label-caps text-label-caps flex items-center justify-center gap-xs transition-colors rounded-lg">
+<span class="material-symbols-outlined text-[16px]">share</span>
+    Share to X
+</button></div>
+</section>
+</main>
+<!-- Bottom Navigation Anchor (Mobile Only) -->
+<nav class="flex lg:hidden justify-around items-center w-full h-16 px-4 bg-primary border-t-2 border-secondary fixed bottom-0 z-50">
+<a class="flex flex-col items-center justify-center bg-secondary text-primary p-2 w-full h-full border-r-2 border-secondary" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-label-mono text-label-mono mt-1">PARAM</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary-fixed-dim p-2 w-full h-full border-r-2 border-secondary hover:bg-secondary-container hover:text-primary" href="#">
+<span class="material-symbols-outlined">id_card</span>
+<span class="font-label-mono text-label-mono mt-1">PREVIEW</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary-fixed-dim p-2 w-full h-full hover:bg-secondary-container hover:text-primary" href="#">
+<span class="material-symbols-outlined">download</span>
+<span class="font-label-mono text-label-mono mt-1">EXPORT</span>
+</a>
+</nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>
